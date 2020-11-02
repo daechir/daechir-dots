@@ -1,0 +1,138 @@
+# .xnetworking
+# Manage various networking items using only bash functions
+
+# Add xconnect function
+xconnect() {
+  local xenos_ctype=$1
+  local xenos_arg1=$2
+
+  case $xenos_ctype in
+    1)
+      nmcli device wifi connect "${xenos_arg1}"
+      ;;
+    1a)
+      nmcli device wifi list
+      ;;
+    2)
+      doas openvpn "${xenos_arg1}"
+      ;;
+    2a)
+      doas bash /usr/bin/xenos-control-dns.sh 2> /dev/null
+      ;;
+    3)
+      nmcli device disconnect "${xenos_arg1}"
+      ;;
+  esac
+}
+
+# Add xcons (x connection state) function
+xcons() {
+  local xenos_arg1=$1
+
+  echo -e "\n# ip link show\n"
+  ip link show
+  echo -e "\n# ip route\n"
+  ip route
+  echo -e "\n# resolvectl status\n"
+  resolvectl status
+
+  if [[ -n "${xenos_arg1}" ]]; then
+    echo -e "\n# nmcli connection show \"${xenos_arg1}\"\n"
+    nmcli connection show "${xenos_arg1}" | grep -i "mdns\|llmnr\|powersave"
+  fi
+}
+
+# Add xmirup (x mirror update) function
+xmirup() {
+  if [[ -n $1 ]]; then
+    local xenos_mirurl=$1
+  else
+    local xenos_mirurl="https://www.archlinux.org/mirrorlist/?country=US&protocol=https&ip_version=4&use_mirror_status=on"
+  fi
+
+  curl -o mirrorlist.pre "${xenos_mirurl}"
+  sed -i "s/^#Server/Server/g" mirrorlist.pre
+  rankmirrors -n 8 mirrorlist.pre > mirrorlist
+  doas cp mirrorlist /etc/pacman.d/
+}
+
+# Add xovpnup (x ovpn update) function
+xovpnup() {
+  local xenos_provider=$1
+  local xenos_ovpndir=$2/new-ovpn
+  local xenos_ovpndirp=$2/*
+
+  if [[ ! -d "${xenos_ovpndir}" ]]; then
+    mkdir "${xenos_ovpndir}"
+  fi
+
+  case $xenos_provider in
+    expressvpn | EXPRESSVPN | Expressvpn | express | e)
+      for ovpn in $xenos_ovpndirp
+      do
+        if [[ -f "${ovpn}" ]]; then
+          local xenos_ovpndiro="${ovpn##*/}"
+          xenos_ovpndiro="${xenos_ovpndir}/${xenos_ovpndiro}"
+
+          sed -i "s/^cipher.*//g" "${ovpn}"
+          sed -i "s/^keysize.*//g" "${ovpn}"
+          sed -i "1 i\\
+                  script-security 2 \\
+                  setenv PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \\
+                  dhcp-option DOMAIN-ROUTE . \\
+                  up /etc/openvpn/scripts/update-systemd-resolved \\
+                  up-restart \\
+                  down /etc/openvpn/scripts/update-systemd-resolved \\
+                  down-pre \\
+                  proto udp \\
+                  auth-nocache \\
+                  data-ciphers AES-256-GCM:AES-256-CBC \\
+                  data-ciphers-fallback AES-256-CBC \\
+                  user novpn \\
+                  group novpn" "${ovpn}"
+          sed -i "s/^ns-cert-type.*/remote-cert-tls server/g" "${ovpn}"
+          sed -i "s/^auth-user-pass.*/auth-user-pass auth.cfg/g" "${ovpn}"
+          touch "${xenos_ovpndiro}"
+          head -n 39 "${ovpn}" | sed "s/^[ \t]*//;s/[ \t]*$//" | sed "/^$/d" | sort | tee -a  "${xenos_ovpndiro}" > /dev/null
+          cat "${ovpn}" | sed "1,39d" | tee -a  "${xenos_ovpndiro}" > /dev/null
+        fi
+      done
+      ;;
+    protovpn | PROTOVPN | Protovpn | proto | p)
+      for ovpn in $xenos_ovpndirp
+      do
+        if [[ -f "${ovpn}" ]]; then
+          local xenos_ovpndiro="${ovpn##*/}"
+          xenos_ovpndiro="${xenos_ovpndir}/${xenos_ovpndiro}"
+
+          sed -i "s/^cipher.*//g" "${ovpn}"
+          sed -i "s/^script-security.*//g" "${ovpn}"
+          sed -i "s/^up.*//g" "${ovpn}"
+          sed -i "s/^down.*//g" "${ovpn}"
+          sed -i "s/^key-direction.*//g" "${ovpn}"
+          sed -i "25 i\\
+                  script-security 2 \\
+                  setenv PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \\
+                  dhcp-option DOMAIN-ROUTE . \\
+                  up /etc/openvpn/scripts/update-systemd-resolved \\
+                  up-restart \\
+                  down /etc/openvpn/scripts/update-systemd-resolved \\
+                  down-pre \\
+                  key-direction 1 \\
+                  auth-nocache \\
+                  data-ciphers AES-256-GCM:AES-256-CBC \\
+                  data-ciphers-fallback AES-256-CBC \\
+                  user novpn \\
+                  group novpn" "${ovpn}"
+          sed -i "s/^client.*/tls-client/g" "${ovpn}"
+          sed -i "s/^auth-user-pass.*/auth-user-pass auth.cfg/g" "${ovpn}"
+          touch "${xenos_ovpndiro}"
+          sed -i "1,24d" "${ovpn}"
+          head -n 48 "${ovpn}" | sed "s/^[ \t]*//;s/[ \t]*$//" | sed "/^$/d" | sort | tee -a  "${xenos_ovpndiro}" > /dev/null
+          cat "${ovpn}" | sed "1,48d" | tee -a  "${xenos_ovpndiro}" > /dev/null
+        fi
+      done
+      ;;
+  esac
+}
+

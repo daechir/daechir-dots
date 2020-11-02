@@ -1,0 +1,186 @@
+# .xfilemanager
+# A minimalist file manager using only bash functions
+# In a sense, making file managers just file managers again
+
+# Add xcd (x change directory) function
+xcd() {
+  local xenos_cdtype=$1
+  local xenos_arg1=$2
+
+  case $xenos_cdtype in
+    1)
+      cd ".."
+      ;;
+    2)
+      cd "../../"
+      ;;
+    3)
+      cd "../../../"
+      ;;
+    4)
+      cd "../../../../"
+      ;;
+    c | current)
+      cd "$PWD/${xenos_arg1}"
+      ;;
+    h | home)
+      cd "$HOME/${xenos_arg1}"
+      ;;
+    m | media)
+      cd "/run/media/$USER/${xenos_arg1}"
+      ;;
+    *)
+      cd "${xenos_arg1}"
+      ;;
+  esac
+
+  xtr
+}
+
+# Add xarcc (x archive compress) function
+xarcc() {
+  local xenos_comptype=$1
+  local xenos_arg1=$2
+  local xenos_arg2=$3
+
+  case "${xenos_comptype}" in
+    bz2)
+      bzip2 -z -9 "${xenos_arg1}.${xenos_comptype}" "${xenos_arg2}"
+      ;;
+    gz)
+      gzip -r -9 "${xenos_arg1}.${xenos_comptype}" "${xenos_arg2}"
+      ;;
+    tar)
+      tar -cf "${xenos_arg1}.${xenos_comptype}" "${xenos_arg2}"
+      ;;
+    tar.bz2 | tbz)
+      tar -cjf "${xenos_arg1}.${xenos_comptype}" "${xenos_arg2}"
+      ;;
+    tar.gz | tgz)
+      tar -czf "${xenos_arg1}.${xenos_comptype}" "${xenos_arg2}"
+      ;;
+    tar.xz | xz)
+      xz -z -9 --thread=0 "${xenos_arg1}.${xenos_comptype}" "${xenos_arg2}"
+      ;;
+    tar.zst | zst)
+      zstd -r -9 "${xenos_arg1}.${xenos_comptype}" "${xenos_arg2}"
+      ;;
+    zip)
+      zip -r -9 "${xenos_arg1}.${xenos_comptype}" "${xenos_arg2}"
+      ;;
+    7z)
+      7z a -r -t7z -m0=lzma2 -mx=9 -myx=9 -mqs=on -ms=on "${xenos_arg1}.${xenos_comptype}" "${xenos_arg2}"
+      ;;
+  esac
+}
+
+# Add xarce (x archive extract) function
+xarce() {
+  local xenos_extrtype=$1
+
+  if [[ -f "${xenos_extrtype}" ]]; then
+    case "${xenos_extrtype}" in
+      *.bz2)
+        bzip2 -d -k "${xenos_extrtype}"
+        ;;
+      *.gz)
+        gzip -d -k "${xenos_extrtype}"
+        ;;
+      *.rar)
+        unrar -x "${xenos_extrtype}"
+        ;;
+      *.tar)
+        tar -xf "${xenos_extrtype}"
+        ;;
+      *.tar.bz2 | *.tbz)
+        tar -xjf "${xenos_extrtype}"
+        ;;
+      *.tar.gz | *.tgz)
+        tar -xzf "${xenos_extrtype}"
+        ;;
+      *.tar.xz | *.xz)
+        xz -d "${xenos_extrtype}"
+        ;;
+      *.tar.zst | *.zst)
+        zstd -d "${xenos_extrtype}"
+        ;;
+      *.zip)
+        unzip "${xenos_extrtype}"
+        ;;
+      *.7z)
+        7z -e "${xenos_extrtype}"
+        ;;
+    esac
+  fi
+}
+
+# Add xfind function
+xfind() {
+  local xenos_ftype=$1
+  local xenos_arg1=$2
+  local xenos_arg2=$3
+
+  case $xenos_ftype in
+    1)
+      find "${xenos_arg1}" -type f -iname "${xenos_arg2}" 2> /dev/null
+      ;;
+    1a)
+      find "${xenos_arg1}" -type d -iname "${xenos_arg2}" 2> /dev/null
+      ;;
+    2)
+      find "${xenos_arg1}" -exec shred -f -u {} \; 2> /dev/null
+      rm -rf "${xenos_arg1}"
+      ;;
+    3)
+      find "${xenos_arg1}" -type d -exec chmod 700 {} \; 2> /dev/null
+      find "${xenos_arg1}" -type f -exec chmod 600 {} \; 2> /dev/null
+      ;;
+    4)
+      find "${xenos_arg1}" -exec touch {} \;
+      ;;
+  esac
+}
+
+# Add xfm (x filemanager) function
+xfm() {
+  local xenos_fmtype=$1
+  local xenos_arg1=$2
+  local xenos_arg2=$3
+
+  case $xenos_fmtype in
+    1)
+      touch "${xenos_arg1}"
+      ;;
+    1a)
+      mkdir "${xenos_arg1}"
+      ;;
+    2)
+      shred -f -u "${xenos_arg1}"
+      ;;
+    2a)
+      rm -f "${xenos_arg1}"
+      ;;
+    2b)
+      rm -rf "${xenos_arg1}"
+      ;;
+    3)
+      cp "${xenos_arg1}" "${xenos_arg2}"
+      ;;
+    3a)
+      cp -r "${xenos_arg1}" "${xenos_arg2}"
+      ;;
+    3b)
+      rsync --archive --verbose --human-readable --whole-file --compress-level=0 --progress "${xenos_arg1}" "${xenos_arg2}"
+      ;;
+    3c)
+      rsync --archive --verbose --human-readable --whole-file --compress-level=0 --progress --dirs "${xenos_arg1}" "${xenos_arg2}"
+      ;;
+    4)
+      mv "${xenos_arg1}" "${xenos_arg2}"
+      ;;
+    4a)
+      rename "${xenos_arg1}" "${xenos_arg2}"
+      ;;
+  esac
+}
+

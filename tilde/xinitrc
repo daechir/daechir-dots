@@ -1,0 +1,50 @@
+#!/bin/sh
+
+userresources=$HOME/.Xresources
+usermodmap=$HOME/.Xmodmap
+sysresources=/etc/X11/xinit/.Xresources
+sysmodmap=/etc/X11/xinit/.Xmodmap
+walldir=$HOME/Pictures/Wallpapers
+wallpaper=$(ls $walldir | wc -l)
+wallpaper=$(( $RANDOM % $wallpaper + 1 ))
+wallpaper=$walldir/$wallpaper.jpg
+
+# Merge in defaults and keymaps
+
+if [ -f $sysresources ]; then
+  xrdb -merge $sysresources
+fi
+
+if [ -f $sysmodmap ]; then
+  xmodmap $sysmodmap
+fi
+
+if [ -f "$userresources" ]; then
+  xrdb -merge "$userresources"
+fi
+
+if [ -f "$usermodmap" ]; then
+  xmodmap "$usermodmap"
+fi
+
+if [ -d /etc/X11/xinit/xinitrc.d ] ; then
+  for f in /etc/X11/xinit/xinitrc.d/?*.sh ; do
+    [ -x "$f" ] && . "$f"
+  done
+  unset f
+fi
+
+# Begin setup
+## Non-background tasks
+#xinput disable "ELAN0708:00 04F3:30A0 Touchpad"
+#xinput disable "SynPS/2 Synaptics TouchPad"
+gnome-keyring-daemon --daemonize --components=pkcs11,secrets
+redshift -P -O 3000
+xbindkeys
+xsetroot -cursor_name left_ptr
+xwallpaper --stretch $wallpaper
+## Background tasks
+2bwm &
+udiskie --no-automount --no-notify --no-tray --no-appindicator --no-password-cache --no-file-manager --no-terminal &
+xautolock -time 10 -locker slock -secure &
+exec terminator --no-dbus

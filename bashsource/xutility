@@ -1,0 +1,134 @@
+# .xutility
+# Manage various utility items using only bash functions
+
+# Add xdl (x download) function
+xdl() {
+  local xenos_dtype=$1
+  local xenos_arg1=$2
+  local xenos_arg2=$3
+
+  case $xenos_dtype in
+    1)
+      if [[ -n "${xenos_arg2}" ]]; then
+        youtube-dl -f bestvideo+bestaudio --external-downloader axel --external-downloader-args --ipv4 "${xenos_arg1}" "${xenos_arg2}"
+      else
+        youtube-dl -f bestvideo+bestaudio --external-downloader axel --external-downloader-args --ipv4 "${xenos_arg1}"
+      fi
+      ;;
+    2)
+      if [[ -n "${xenos_arg2}" ]]; then
+        youtube-dl -f bestvideo+bestaudio --merge-output-format mp4 --external-downloader axel --external-downloader-args --ipv4 "${xenos_arg1}" "${xenos_arg2}"
+      else
+        youtube-dl -f bestvideo+bestaudio --merge-output-format mp4 --external-downloader axel --external-downloader-args --ipv4 "${xenos_arg1}"
+      fi
+      ;;
+    3)
+      if [[ -n "${xenos_arg2}" ]]; then
+        youtube-dl -x --audio-format mp3 --audio-quality 320K --external-downloader axel --external-downloader-args --ipv4 "${xenos_arg1}" "${xenos_arg2}"
+      else
+        youtube-dl -x --audio-format mp3 --audio-quality 320K --external-downloader axel --external-downloader-args --ipv4 "${xenos_arg1}"
+      fi
+      ;;
+    4)
+      if [[ -n "${xenos_arg2}" ]]; then
+        axel --ipv4 "${xenos_arg1}" "${xenos_arg2}"
+      else
+        axel --ipv4 "${xenos_arg1}"
+      fi
+      ;;
+  esac
+}
+
+# Add xgpg function
+xgpg() {
+  local xenos_gtype=$1
+  local xenos_arg1=$2
+
+  case $xenos_gtype in
+    1)
+      gpg --symmetric --cipher-algo TWOFISH "${xenos_arg1}"
+      ;;
+    2)
+      gpg --symmetric --cipher-algo AES256 "${xenos_arg1}"
+      ;;
+    3)
+      gpg -d "${xenos_arg1}"
+      ;;
+  esac
+}
+
+# Add xiso function
+xiso() {
+  local xenos_itype=$1
+  local xenos_arg1=$2
+  local xenos_arg2=$3
+
+  case $xenos_itype in
+    1)
+      sha256sum "${xenos_arg1}"
+      ;;
+    2)
+      sha1sum "${xenos_arg1}"
+      ;;
+    3)
+      md5sum "${xenos_arg1}"
+      ;;
+    4)
+      doas dd bs=4M if="${xenos_arg1}" of=/dev/"${xenos_arg2}" status=progress && sync
+      ;;
+  esac
+}
+
+# Add xleave function
+xleave() {
+  bleachbit --preset --clean &> /dev/null
+  doas journalctl --rotate --vacuum-time=1s &> /dev/null
+  sleep 5 && systemctl poweroff
+}
+
+# Add xpw (x password) function
+xpw() {
+  local xenos_ptype=$1
+  local xenos_arg1=$2
+  local xenos_arg2=$3
+
+  case $xenos_ptype in
+    1)
+      pwgen -cnys "${xenos_arg1}" "${xenos_arg2}"
+      ;;
+    2)
+      pwgen -cnysB "${xenos_arg1}" "${xenos_arg2}"
+      ;;
+    3)
+      pwgen -cns "${xenos_arg1}" "${xenos_arg2}"
+      ;;
+  esac
+}
+
+# Add xsys (x system) function
+xsys() {
+  local xenos_stype=$1
+  local xenos_arg1=$2
+
+  case $xenos_stype in
+    1)
+      journalctl -b -p err
+      ;;
+    2)
+      journalctl -b -p warning
+      ;;
+    3)
+      doas systemctl daemon-reload
+      ;;
+    4)
+      doas systemctl restart "${xenos_arg1}"
+      ;;
+    5)
+      systemctl list-unit-files | grep -i "${xenos_arg1}"
+      ;;
+    6)
+      sysctl -a | grep -i "${xenos_arg1}"
+      ;;
+  esac
+}
+

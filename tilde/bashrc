@@ -1,0 +1,57 @@
+#
+# ~/.bashrc
+#
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+# Disable at-spi* or accessibility
+NO_GAIL=1
+NO_AT_BRIDGE=1
+export NO_GAIL NO_AT_BRIDGE
+
+# Disable .bash_history
+HISTFILE=/dev/null
+HISTFILESIZE=0
+HISTSIZE=0
+export HISTFILE HISTFILESIZE HISTSIZE
+
+# Disable .lesshst
+LESSHISTFILE=/dev/null
+LESSHISTSIZE=0
+export LESSHISTFILE LESSHISTSIZE
+
+# Enable LESSSECURE mode
+export LESSSECURE=1
+
+# Enhance terminal
+PROMPT_COMMAND='echo -en "\033]0; ${USER} @ ${PWD##*/} \a"'
+PS1='\n\e[0;36m\w\e[m\n>'
+
+# Add bashsource
+if [[ -d $HOME/.bashsource/ ]]; then
+  if [[ -f $HOME/.bashsource/.salias ]]; then
+    . $HOME/.bashsource/.salias
+  fi
+
+  if [[ -f $HOME/.bashsource/.xalias ]]; then
+    . $HOME/.bashsource/.xalias
+  fi
+
+  if [[ -f $HOME/.bashsource/.xfilemanager ]]; then
+    . $HOME/.bashsource/.xfilemanager
+  fi
+
+  if [[ -f $HOME/.bashsource/.xlauncher ]]; then
+    . $HOME/.bashsource/.xlauncher
+  fi
+
+  if [[ -f $HOME/.bashsource/.xnetworking ]]; then
+    . $HOME/.bashsource/.xnetworking
+  fi
+
+  if [[ -f $HOME/.bashsource/.xutility ]]; then
+    . $HOME/.bashsource/.xutility
+  fi
+fi
+

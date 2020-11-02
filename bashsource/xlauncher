@@ -1,0 +1,57 @@
+# .xlauncher
+# A minimalist program launcher using only bash functions
+
+# Add xlaunch function
+xlaunch() {
+  local xenos_app=$1
+  local xenos_arg1=$2
+
+  case $xenos_app in
+    1)
+      xenos_app="firefox --no-remote"
+      ;;
+    2)
+      xenos_app="howl"
+      ;;
+    3m)
+      xenos_app="mupdf"
+      ;;
+    3l)
+      xenos_app="libreoffice --nologo"
+      ;;
+    3w)
+      xenos_app="libreoffice --nologo --writer"
+      ;;
+    3c)
+      xenos_app="libreoffice --nologo --calc"
+      ;;
+    4)
+      xenos_app="qiv --scale_down --maxpect"
+      ;;
+    4a)
+      xenos_app="qiv --scale_down --maxpect --recursivedir"
+      ;;
+    4b)
+      xenos_app="gimp --no-splash"
+      ;;
+    4c)
+      xenos_app="inkscape"
+      ;;
+    5)
+      xenos_app="deluge-gtk"
+      ;;
+    6)
+      xenos_app="bleachbit"
+      ;;
+    7)
+      xenos_app="nm-connection-editor"
+      ;;
+  esac
+
+  if [[ -n "${xenos_arg1}" ]]; then
+    xenos_app="${xenos_app} ${xenos_arg1}"
+  fi
+
+  ($xenos_app &> /dev/null &)
+}
+

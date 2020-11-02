@@ -1,0 +1,40 @@
+[global_config]
+  dbus = False
+  focus = system
+  broadcast_default = off
+  title_transmit_bg_color = "#859900"
+  title_receive_bg_color = "#93a1a1"
+  title_inactive_fg_color = "#ffffff"
+  title_inactive_bg_color = "#2aa198"
+  enabled_plugins = ,
+  suppress_multiple_term_dialog = True
+  title_use_system_font = False
+  title_font = Source Code Variable Medium 11
+[keybindings]
+  new_terminator = ""
+[profiles]
+  [[default]]
+    background_color = "#eee8d5"
+    cursor_color = "#002b36"
+    foreground_color = "#002b36"
+    palette = "#073642:#dc322f:#859900:#b58900:#268bd2:#d33682:#2aa198:#eee8d5:#002b36:#cb4b16:#586e75:#657b83:#839496:#6c71c4:#93a1a1:#fdf6e3"
+  [[solarized-dark]]
+    background_color = "#002b36"
+    cursor_color = "#eee8d5"
+    foreground_color = "#eee8d5"
+    palette = "#073642:#dc322f:#859900:#b58900:#268bd2:#d33682:#2aa198:#eee8d5:#586e75:#cb4b16:#586e75:#657b83:#839496:#6c71c4:#93a1a1:#fdf6e3"
+  [[solarized-light]]
+    background_color = "#eee8d5"
+    cursor_color = "#002b36"
+    foreground_color = "#002b36"
+    palette = "#073642:#dc322f:#859900:#b58900:#268bd2:#d33682:#2aa198:#eee8d5:#002b36:#cb4b16:#586e75:#657b83:#839496:#6c71c4:#93a1a1:#fdf6e3"
+[layouts]
+  [[default]]
+    [[[child1]]]
+      type = Terminal
+      parent = window0
+      profile = solarized-light
+    [[[window0]]]
+      type = Window
+      parent = ""
+[plugins]

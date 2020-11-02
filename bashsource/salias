@@ -1,0 +1,17 @@
+# .salias
+# Manage various standard commands using alias's
+
+# Add grep alias's
+alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias cgrep='cgrep --color=auto -C 1'
+
+# Add ls alias's
+alias ls='ls --color=auto'
+alias ll='ls -la'
+
+# Add pacman alias's
+alias pacsyu='doas pacman -Syu'
+alias pacclean='doas pacman -Rns $(pacman -Qtdq)'
+
