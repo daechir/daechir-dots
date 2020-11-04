@@ -90,8 +90,9 @@ xovpnup() {
                   data-ciphers-fallback AES-256-CBC \\
                   user novpn \\
                   group novpn" "${ovpn}"
-          sed -i "s/^ns-cert-type.*/remote-cert-tls server/g" "${ovpn}"
           sed -i "s/^auth-user-pass.*/auth-user-pass auth.cfg/g" "${ovpn}"
+          sed -i "s/^mssfix.*/mssfix/g" "${ovpn}"
+          sed -i "s/^ns-cert-type.*/remote-cert-tls server/g" "${ovpn}"
           touch "${xenos_ovpndiro}"
           head -n 39 "${ovpn}" | sed "s/^[ \t]*//;s/[ \t]*$//" | sed "/^$/d" | sort | tee -a  "${xenos_ovpndiro}" > /dev/null
           cat "${ovpn}" | sed "1,39d" | tee -a  "${xenos_ovpndiro}" > /dev/null
@@ -124,8 +125,9 @@ xovpnup() {
                   data-ciphers-fallback AES-256-CBC \\
                   user novpn \\
                   group novpn" "${ovpn}"
-          sed -i "s/^client.*/tls-client/g" "${ovpn}"
           sed -i "s/^auth-user-pass.*/auth-user-pass auth.cfg/g" "${ovpn}"
+          sed -i "s/^client.*/tls-client/g" "${ovpn}"
+          sed -i "s/^mssfix.*/mssfix/g" "${ovpn}"
           touch "${xenos_ovpndiro}"
           sed -i "1,24d" "${ovpn}"
           head -n 48 "${ovpn}" | sed "s/^[ \t]*//;s/[ \t]*$//" | sed "/^$/d" | sort | tee -a  "${xenos_ovpndiro}" > /dev/null

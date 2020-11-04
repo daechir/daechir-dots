@@ -1,4 +1,4 @@
-z#!/bin/bash
+#!/bin/bash
 # Print commands before executing and exit when any command fails
 set -xe
 

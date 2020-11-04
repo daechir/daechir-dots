@@ -29,6 +29,13 @@ xdl() {
         youtube-dl -x --audio-format mp3 --audio-quality 320K --external-downloader axel --external-downloader-args --ipv4 "${xenos_arg1}"
       fi
       ;;
+    3a)
+      if [[ -n "${xenos_arg2}" ]]; then
+        youtube-dl -x --audio-format mp3 --audio-quality 320K --yes-playlist --external-downloader axel --external-downloader-args --ipv4 "${xenos_arg1}" "${xenos_arg2}"
+      else
+        youtube-dl -x --audio-format mp3 --audio-quality 320K --yes-playlist --external-downloader axel --external-downloader-args --ipv4 "${xenos_arg1}"
+      fi
+      ;;
     4)
       if [[ -n "${xenos_arg2}" ]]; then
         axel --ipv4 "${xenos_arg1}" "${xenos_arg2}"
