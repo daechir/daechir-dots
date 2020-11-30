@@ -1,7 +1,7 @@
 /******
 * name: arkenfox user.js
-* date: 13 Oct 2020
-* version 82-alpha
+* date: 22 Nov 2020
+* version 84-alpha
 * url: https://github.com/arkenfox/user.js
 * license: MIT: https://github.com/arkenfox/user.js/blob/master/LICENSE.txt
 
@@ -26,13 +26,18 @@
            [SETUP-PERF] may impact performance
               [WARNING] used sparingly, heed them
 
-* RELEASES
+* RELEASES: https://github.com/arkenfox/user.js/releases
 
-  * Archive: https://github.com/arkenfox/user.js/releases
-  * Use the correct release that matches your Firefox version
-  * Each release
-    - run the prefsCleaner or reset deprecated prefs (9999s) and prefs made redundant by RFP (4600s)
+  * It is best to use the arkenfox release that is optimized for and matches your Firefox version
+  * EVERYONE: each release
+    - run prefsCleaner or reset deprecated prefs (9999s) and prefs made redundant by RPF (4600s)
     - re-enable section 4600 if you don't use RFP
+    ESR78
+    - If you are not using arkenfox v78... (not a definitive list)
+      - 1244: HTTPS-Only mode is enabled
+      - 1401: document fonts is inactive as it is now covered by RFP in FF80+
+      - 4600: some prefs may apply even if you use RFP (currently none apply as of FF84)
+      - 9999: switch the appropriate deprecated section(s) back on
 
 * INDEX:
 
@@ -109,20 +114,20 @@ user_pref("browser.newtabpage.activity-stream.telemetry", false);
 /* 0105b: disable Activity Stream Snippets
  * Runs code received from a server (aka Remote Code Execution) and sends information back to a metrics server
  * [1] https://abouthome-snippets-service.readthedocs.io/ ***/
-user_pref("browser.newtabpage.activity-stream.feeds.snippets", false);
+/*** Includes custom additions ***/
 user_pref("browser.newtabpage.activity-stream.asrouter.providers.snippets", "{}");
-/* 0105c: disable Activity Stream Top Stories, Pocket-based and/or sponsored content ***/
-user_pref("browser.newtabpage.activity-stream.feeds.section.topstories", false);
-user_pref("browser.newtabpage.activity-stream.section.highlights.includePocket", false);
-user_pref("browser.newtabpage.activity-stream.showSponsored", false);
-user_pref("browser.newtabpage.activity-stream.feeds.discoverystreamfeed", false); // [FF66+]
-/* Custom additions */
-user_pref("browser.newtabpage.activity-stream.feeds.topsites", false);
+user_pref("browser.newtabpage.activity-stream.feeds.discoverystreamfeed", false);
 user_pref("browser.newtabpage.activity-stream.feeds.section.highlights", false);
+user_pref("browser.newtabpage.activity-stream.feeds.section.topstories", false);
+user_pref("browser.newtabpage.activity-stream.feeds.snippets", false);
+user_pref("browser.newtabpage.activity-stream.feeds.topsites", false);
 user_pref("browser.newtabpage.activity-stream.section.highlights.includeBookmarks", false);
 user_pref("browser.newtabpage.activity-stream.section.highlights.includeDownloads", false);
 user_pref("browser.newtabpage.activity-stream.section.highlights.includePocket", false);
+user_pref("browser.newtabpage.activity-stream.section.highlights.includePocket", false);
 user_pref("browser.newtabpage.activity-stream.section.highlights.includeVisited", false);
+user_pref("browser.newtabpage.activity-stream.showSearch", false);
+user_pref("browser.newtabpage.activity-stream.showSponsored", false);
 /* 0105d: disable Activity Stream recent Highlights in the Library [FF57+] ***/
 user_pref("browser.library.activity-stream.enabled", false);
 /* 0105e: clear default topsites
@@ -350,6 +355,7 @@ user_pref("browser.ping-centre.telemetry", false);
  * [1] https://wiki.mozilla.org/Firefox/Features/Form_Autofill ***/
 user_pref("extensions.formautofill.addresses.enabled", false); // [FF55+]
 user_pref("extensions.formautofill.available", "off"); // [FF56+]
+user_pref("extensions.formautofill.creditCards.available", false); // [FF57+]
 user_pref("extensions.formautofill.creditCards.enabled", false); // [FF56+]
 user_pref("extensions.formautofill.heuristics.enabled", false); // [FF55+]
 /* 0518: disable Web Compatibility Reporter [FF56+]
@@ -385,6 +391,7 @@ user_pref("_user.js.parrot", "0700 syntax error: the parrot's given up the ghost
  * [NOTE] This is just an application level fallback. Disabling IPv6 is best done at an
  * OS/network level, and/or configured properly in VPN setups. If you are not masking your IP,
  * then this won't make much difference. If you are masking your IP, then it can only help.
+ * [NOTE] PHP defaults to IPv6 with "localhost". Use "php -S 127.0.0.1:PORT"
  * [TEST] https://ipleak.org/
  * [1] https://github.com/arkenfox/user.js/issues/437#issuecomment-403740626
  * [2] https://www.internetsociety.org/tag/ipv6-security/ (see Myths 2,4,5,6) ***/
@@ -521,10 +528,10 @@ user_pref("_user.js.parrot", "0900 syntax error: the parrot's expired!");
 /* 0901: disable saving passwords
  * [NOTE] This does not clear any passwords already saved
  * [SETTING] Privacy & Security>Logins and Passwords>Ask to save logins and passwords for websites ***/
-user_pref("signon.rememberSignons", false);
-/* Custom additions */
+/*** Includes custom additions ***/
 user_pref("signon.generation.enabled", false);
 user_pref("signon.management.page.breach-alerts.enabled", false);
+user_pref("signon.rememberSignons", false);
 /* 0902: use a primary password
  * There are no preferences for this. It is all handled internally.
  * [SETTING] Privacy & Security>Logins and Passwords>Use a Primary Password
@@ -720,6 +727,15 @@ user_pref("security.family_safety.mode", 0);
  * by inspecting ALL your web traffic, then leave at current default=1
  * [1] https://gitlab.torproject.org/tpo/applications/tor-browser/-/issues/16206 ***/
 user_pref("security.cert_pinning.enforcement_level", 2);
+/* 1224: enforce CRLite [FF73+]
+ * In FF84+ it covers valid certs and in mode 2 doesn't fall back to OCSP, see [2]
+ * [1] https://bugzilla.mozilla.org/1429800 [META]
+ * [2] https://bugzilla.mozilla.org/1670985
+ * [3] https://blog.mozilla.org/security/2020/01/09/crlite-part-1-all-web-pki-revocations-compressed/
+ * [4] https://blog.mozilla.org/security/2020/01/09/crlite-part-2-end-to-end-design/
+ * [5] https://blog.mozilla.org/security/2020/01/21/crlite-part-3-speeding-up-secure-browsing/ ***/
+user_pref("security.remote_settings.crlite_filters.enabled", true);
+user_pref("security.pki.crlite_mode", 2);
 
 /** MIXED CONTENT ***/
 /* 1240: enforce no insecure active content on https pages
@@ -732,14 +748,22 @@ user_pref("security.mixed_content.block_display_content", true);
 user_pref("security.mixed_content.block_object_subrequest", true);
 /* 1244: enable HTTPS-Only mode [FF76+]
  * When "https_only_mode" (all windows) is true, "https_only_mode_pbm" (private windows only) is ignored
- * [WARNING] This is experimental [1] and you can't set exceptions if FPI is enabled [2] (fixed in FF83)
- * [SETTING] to add site exceptions: Page Info>Permissions>Use insecure HTTP (FF80+)
- * [SETTING] Privacy & Security>HTTPS-Only Mode (FF80+ with browser.preferences.exposeHTTPSOnly = true)
+ * [SETTING] to add site exceptions: Page Info>HTTPS-Only mode>On/Off/Off temporarily
+ * [SETTING] Privacy & Security>HTTPS-Only Mode
+ * [TEST] http://example.com [upgrade]
+ * [TEST] http://neverssl.org/ [no upgrade]
  * [1] https://bugzilla.mozilla.org/1613063 [META]
  * [2] https://bugzilla.mozilla.org/1647829 ***/
-   // user_pref("dom.security.https_only_mode", true); // [FF76+]
+user_pref("dom.security.https_only_mode", true); // [FF76+]
    // user_pref("dom.security.https_only_mode_pbm", true); // [FF80+]
-   // user_pref("dom.security.https_only_mode.upgrade_local", true); // [FF77+]
+/* 1245: enable HTTPS-Only mode for local resources [FF77+] ***/
+   // user_pref("dom.security.https_only_mode.upgrade_local", true);
+/* 1246: disable HTTP background requests [FF82+]
+ * When attempting to upgrade, if the server doesn't respond within 3 seconds, firefox
+ * sends HTTP requests in order to check if the server supports HTTPS or not.
+ * This is done to avoid waiting for a timeout which takes 90 seconds
+ * [1] https://bugzilla.mozilla.org/buglist.cgi?bug_id=1642387,1660945 ***/
+user_pref("dom.security.https_only_mode_send_http_background_request", false);
 
 /** CIPHERS [WARNING: do not meddle with your cipher suite: see the section 1200 intro]
  * These are all the ciphers still using SHA-1 and CBC which are weaker than the available alternatives. (see "Cipher Suites" in [1])
@@ -804,8 +828,8 @@ user_pref("gfx.font_rendering.opentype_svg.enabled", false);
 user_pref("gfx.font_rendering.graphite.enabled", false);
 /* 1409: limit system font exposure to a whitelist [FF52+] [RESTART]
  * If the whitelist is empty, then whitelisting is considered disabled and all fonts are allowed
- * [WARNING] **DO NOT USE**: in FF80+ RFP covers this, and non-RFP users should use font vis (4618)
  * [NOTE] In FF81+ the whitelist **overrides** RFP's font visibility (see 4618)
+ * [WARNING] **DO NOT USE**: in FF80+ RFP covers this, and non-RFP users should use font vis (4618)
  * [1] https://bugzilla.mozilla.org/1121643 ***/
    // user_pref("font.system.whitelist", ""); // [HIDDEN PREF]
 
@@ -1028,10 +1052,10 @@ user_pref("_user.js.parrot", "2400 syntax error: the parrot's kicked the bucket!
  * [WARNING] If both 'middlemouse.paste' and 'general.autoScroll' are true (at least one
  * is default false) then enabling this pref can leak clipboard content, see [1]
  * [1] https://bugzilla.mozilla.org/1528289 */
+/*** Includes custom additions ***/
 user_pref("dom.event.clipboardevents.enabled", false);
-/* Custom addtions */
-user_pref("middlemouse.paste", false);
 user_pref("general.autoScroll", false);
+user_pref("middlemouse.paste", false);
 /* 2404: disable clipboard commands (cut/copy) from "non-privileged" content [FF41+]
  * this disables document.execCommand("cut"/"copy") to protect your clipboard
  * [1] https://bugzilla.mozilla.org/1170911 ***/
@@ -1059,8 +1083,14 @@ user_pref("javascript.options.asmjs", false);
    // user_pref("javascript.options.ion", false);
    // user_pref("javascript.options.baselinejit", false);
    // user_pref("javascript.options.jit_trustedprincipals", true); // [FF75+] [HIDDEN PREF]
-/* 2422: disable WebAssembly [FF52+] [SETUP-PERF]
- * [1] https://developer.mozilla.org/docs/WebAssembly ***/
+/* 2422: disable WebAssembly [FF52+]
+ * Vulnerabilities have increasingly been found, including those known and fixed
+ * in native programs years ago [2]. WASM has powerful low-level access, making
+ * certain attacks (brute-force) and vulnerabilities more possible
+ * [STATS] ~0.2% of websites, about half of which are for crytopmining / malvertising [2][3]
+ * [1] https://developer.mozilla.org/docs/WebAssembly
+ * [2] https://spectrum.ieee.org/tech-talk/telecom/security/more-worries-over-the-security-of-web-assembly
+ * [3] https://www.zdnet.com/article/half-of-the-websites-using-webassembly-use-it-for-malicious-purposes ***/
 user_pref("javascript.options.wasm", false);
 /* 2429: enable (limited but sufficient) window.opener protection [FF65+]
  * Makes rel=noopener implicit for target=_blank in anchor and area elements when no rel attribute is set ***/
@@ -1185,6 +1215,10 @@ user_pref("browser.display.use_system_colors", false); // [DEFAULT: false]
  * for these will show/use their correct 3rd party origin
  * [1] https://groups.google.com/forum/#!topic/mozilla.dev.platform/BdFOMAuCGW8/discussion */
 user_pref("permissions.delegation.enabled", false);
+/* 2624: enable "window.name" protection [FF82+]
+ * If a new page from another domain is loaded into a tab, then window.name is set to an empty string. The original
+ * string is restored if the tab reverts back to the original page. This change prevents some cross-site attacks ***/
+user_pref("privacy.window.name.update.enabled", true);
 
 /** DOWNLOADS ***/
 /* 2650: discourage downloading to desktop
@@ -1248,11 +1282,11 @@ user_pref("_user.js.parrot", "2700 syntax error: the parrot's joined the bleedin
  * [NOTE] You can set exceptions under site permissions or use an extension
  * [NOTE] Enforcing category to custom ensures ETP related prefs are always honored
  * [SETTING] Privacy & Security>Enhanced Tracking Protection>Custom>Cookies ***/
-user_pref("network.cookie.cookieBehavior", 1);
+/*** Includes custom additions ***/
 user_pref("browser.contentblocking.category", "custom");
-/* Custom additions */
-user_pref("privacy.trackingprotection.enabled", true);
+user_pref("network.cookie.cookieBehavior", 1);
 user_pref("privacy.trackingprotection.cryptomining.enabled", true);
+user_pref("privacy.trackingprotection.enabled", true);
 user_pref("privacy.trackingprotection.fingerprinting.enabled", true);
 /* 2702: set third-party cookies (if enabled, see 2701) to session-only
    [NOTE] .sessionOnly overrides .nonsecureSessionOnly except when .sessionOnly=false and
@@ -1269,8 +1303,10 @@ user_pref("network.cookie.lifetimePolicy", 2);
  * [WARNING] This will break a LOT of sites' functionality AND extensions!
  * You are better off using an extension for more granular control ***/
    // user_pref("dom.storage.enabled", false);
-/* 2730: disable offline cache ***/
+/* 2730: enforce no offline cache storage (appCache)
+ * The API is easily fingerprinted, use the "storage" pref instead ***/
 user_pref("browser.cache.offline.enable", false);
+user_pref("browser.cache.offline.storage.enable", false); // [FF71+] [DEFAULT: false FF84+]
 /* 2740: disable service worker cache and cache storage
  * [NOTE] We clear service worker cache on exiting Firefox (see 2803)
  * [1] https://w3c.github.io/ServiceWorker/#privacy ***/
@@ -1286,6 +1322,8 @@ user_pref("browser.cache.offline.enable", false);
 /* 2755: disable Storage Access API [FF65+]
  * [1] https://developer.mozilla.org/en-US/docs/Web/API/Storage_Access_API ***/
    // user_pref("dom.storage_access.enabled", false);
+/* 2760: enable Local Storage Next Generation (LSNG) [FF65+] ***/
+user_pref("dom.storage.next_gen", true);
 
 /*** [SECTION 2800]: SHUTDOWN
      You should set the values to what suits you best.
@@ -1341,28 +1379,24 @@ user_pref("privacy.cpd.siteSettings", true); // Site Preferences
 user_pref("privacy.sanitize.timeSpan", 0);
 
 /*** [SECTION 4000]: FPI (FIRST PARTY ISOLATION)
- 4001: FPI
- ** 1278037 - isolate indexedDB (FF51+)
- ** 1277803 - isolate favicons (FF52+)
- ** 1264562 - isolate OCSP cache (FF52+)
- ** 1268726 - isolate Shared Workers (FF52+)
- ** 1316283 - isolate SSL session cache (FF52+)
- ** 1317927 - isolate media cache (FF53+)
- ** 1323644 - isolate HSTS and HPKP (FF54+)
- ** 1334690 - isolate HTTP Alternative Services (FF54+)
- ** 1334693 - isolate SPDY/HTTP2 (FF55+)
- ** 1337893 - isolate DNS cache (FF55+)
- ** 1344170 - isolate blob: URI (FF55+)
- ** 1300671 - isolate data:, about: URLs (FF55+)
- ** 1473247 - isolate IP addresses (FF63+)
- ** 1492607 - isolate postMessage with targetOrigin "*" (requires 4002) (FF65+)
- ** 1542309 - isolate top-level domain URLs when host is in the public suffix list (FF68+)
- ** 1506693 - isolate pdfjs range-based requests (FF68+)
- ** 1330467 - isolate site permissions (FF69+)
- ** 1534339 - isolate IPv6 (FF73+)
- 4003: NETWORK PARTITON
- ** 1647732 - isolate font cache (FF80+)
- ** 1649673 - isolate speculative connections (FF80+)
+   1278037 - indexedDB (FF51+)
+   1277803 - favicons (FF52+)
+   1264562 - OCSP cache (FF52+)
+   1268726 - Shared Workers (FF52+)
+   1316283 - SSL session cache (FF52+)
+   1317927 - media cache (FF53+)
+   1323644 - HSTS and HPKP (FF54+)
+   1334690 - HTTP Alternative Services (FF54+)
+   1334693 - SPDY/HTTP2 (FF55+)
+   1337893 - DNS cache (FF55+)
+   1344170 - blob: URI (FF55+)
+   1300671 - data:, about: URLs (FF55+)
+   1473247 - IP addresses (FF63+)
+   1492607 - postMessage with targetOrigin "*" (requires 4002) (FF65+)
+   1542309 - top-level domain URLs when host is in the public suffix list (FF68+)
+   1506693 - pdfjs range-based requests (FF68+)
+   1330467 - site permissions (FF69+)
+   1534339 - IPv6 (FF73+)
 ***/
 user_pref("_user.js.parrot", "4000 syntax error: the parrot's pegged out");
 /* 4001: enable First Party Isolation [FF51+]
@@ -1380,9 +1414,10 @@ user_pref("privacy.firstparty.isolate", true);
  * [3] https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage ***/
 user_pref("privacy.firstparty.isolate.restrict_opener_access", true); // [DEFAULT: true]
 user_pref("privacy.firstparty.isolate.block_post_message", true);
-/* 4003: enable site partitioning (FF78+)
- * [1] https://bugzilla.mozilla.org/1590107 [META] */
-user_pref("privacy.partition.network_state", true);
+/* 4003: enable scheme with FPI [FF78+]
+ * [NOTE] Experimental: existing data and site permissions are incompatible
+ * and some site exceptions may not work e.g. HTTPS-only mode (see 1244) ***/
+user_pref("privacy.firstparty.isolate.use_site", true);
 
 /*** [SECTION 4500]: RFP (RESIST FINGERPRINTING)
    RFP covers a wide range of ongoing fingerprinting solutions.
@@ -1446,6 +1481,7 @@ user_pref("privacy.partition.network_state", true);
  FF78+
    1621433 - randomize canvas (previously FF58+ returned an all-white canvas) (FF78+)
    1653987 - limit font visibility to bundled and "Base Fonts" (see 4618) (non-ANDROID) (FF80+)
+   1461454 - spoof smooth=true and powerEfficient=false for supported media in MediaCapabilities (FF82+)
 ***/
 user_pref("_user.js.parrot", "4500 syntax error: the parrot's popped 'is clogs");
 /* 4501: enable privacy.resistFingerprinting [FF41+]
@@ -1636,17 +1672,16 @@ user_pref("_user.js.parrot", "5000 syntax error: this is an ex-parrot!");
    // user_pref("identity.fxaccounts.enabled", false); // Firefox Accounts & Sync [FF60+] [RESTART]
    // user_pref("reader.parse-on-load.enabled", false); // Reader View
 /* OTHER ***/
-/* Custom additions */
+/*** Includes custom additions ***/
 // [SETTING] General>Browsing>Enable picture-in-picture video controls
 user_pref("media.videocontrols.picture-in-picture.enabled", false);
 user_pref("media.videocontrols.picture-in-picture.video-toggle.enabled", false);
+// [SETTING] General>Browsing>Control media via keyboard, headset, or virtual interface
+user_pref("media.hardwaremediakeys.enabled", false);
 // [SETTING] General>Browsing>Recommend extensions as you browse
 user_pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons", false);
  // [SETTING] General>Browsing>Recommend features as you browse
 user_pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features", false);
-   // user_pref("browser.bookmarks.max_backups", 2);
-   // user_pref("network.manage-offline-status", false); // see bugzilla 620472
-   // user_pref("xpinstall.signatures.required", false); // enforced extension signing (Nightly/ESR)
 
 /*** [SECTION 9999]: DEPRECATED / REMOVED / LEGACY / RENAMED
      Documentation denoted as [-]. Items deprecated in FF78 or earlier have been archived at [1],
