@@ -121,19 +121,22 @@ xsys() {
     1)
       journalctl -b -p err
       ;;
-    2)
+    1a)
       journalctl -b -p warning
       ;;
-    3)
+    1b)
+      systemctl status
+      ;;
+    2)
       doas systemctl daemon-reload
       ;;
-    4)
+    3)
       doas systemctl restart "${xenos_arg1}"
       ;;
-    5)
+    4)
       systemctl list-unit-files | grep -i "${xenos_arg1}"
       ;;
-    6)
+    5)
       sysctl -a | grep -i "${xenos_arg1}"
       ;;
   esac

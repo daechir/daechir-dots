@@ -20,7 +20,9 @@ xconnect() {
       doas bash /usr/bin/xenos-control-dns.sh 2> /dev/null
       ;;
     3)
-      nmcli device disconnect "${xenos_arg1}"
+      local active_device=$(ip -o link show | awk '{print $2,$9}' | grep -i "up" | awk '{print $1}' | sed "s/://g")
+
+      nmcli device disconnect "${active_device}"
       ;;
   esac
 }
@@ -45,10 +47,12 @@ xcons() {
 # Add xmirup (x mirror update) function
 xmirup() {
   if [[ -n $1 ]]; then
-    local xenos_mirurl=$1
+    local xenos_countrycode=$1
   else
-    local xenos_mirurl="https://www.archlinux.org/mirrorlist/?country=US&protocol=https&ip_version=4&use_mirror_status=on"
+    local xenos_countrycode="US"
   fi
+
+  local xenos_mirurl="https://archlinux.org/mirrorlist/?country=${xenos_countrycode}&protocol=https&ip_version=4&use_mirror_status=on"
 
   curl -o mirrorlist.pre "${xenos_mirurl}"
   sed -i "s/^#Server/Server/g" mirrorlist.pre
@@ -78,7 +82,6 @@ xovpnup() {
           sed -i "s/^keysize.*//g" "${ovpn}"
           sed -i "1 i\\
                   script-security 2 \\
-                  setenv PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \\
                   dhcp-option DOMAIN-ROUTE . \\
                   up /etc/openvpn/scripts/update-systemd-resolved \\
                   up-restart \\
@@ -94,8 +97,8 @@ xovpnup() {
           sed -i "s/^mssfix.*/mssfix/g" "${ovpn}"
           sed -i "s/^ns-cert-type.*/remote-cert-tls server/g" "${ovpn}"
           touch "${xenos_ovpndiro}"
-          head -n 39 "${ovpn}" | sed "s/^[ \t]*//;s/[ \t]*$//" | sed "/^$/d" | sort | tee -a  "${xenos_ovpndiro}" > /dev/null
-          cat "${ovpn}" | sed "1,39d" | tee -a  "${xenos_ovpndiro}" > /dev/null
+          head -n 38 "${ovpn}" | sed "s/^[ \t]*//;s/[ \t]*$//" | sed "/^$/d" | sort | tee -a  "${xenos_ovpndiro}" > /dev/null
+          cat "${ovpn}" | sed "1,38d" | tee -a  "${xenos_ovpndiro}" > /dev/null
         fi
       done
       ;;
@@ -113,7 +116,6 @@ xovpnup() {
           sed -i "s/^key-direction.*//g" "${ovpn}"
           sed -i "25 i\\
                   script-security 2 \\
-                  setenv PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \\
                   dhcp-option DOMAIN-ROUTE . \\
                   up /etc/openvpn/scripts/update-systemd-resolved \\
                   up-restart \\
@@ -130,8 +132,8 @@ xovpnup() {
           sed -i "s/^mssfix.*/mssfix/g" "${ovpn}"
           touch "${xenos_ovpndiro}"
           sed -i "1,24d" "${ovpn}"
-          head -n 48 "${ovpn}" | sed "s/^[ \t]*//;s/[ \t]*$//" | sed "/^$/d" | sort | tee -a  "${xenos_ovpndiro}" > /dev/null
-          cat "${ovpn}" | sed "1,48d" | tee -a  "${xenos_ovpndiro}" > /dev/null
+          head -n 47 "${ovpn}" | sed "s/^[ \t]*//;s/[ \t]*$//" | sed "/^$/d" | sort | tee -a  "${xenos_ovpndiro}" > /dev/null
+          cat "${ovpn}" | sed "1,47d" | tee -a  "${xenos_ovpndiro}" > /dev/null
         fi
       done
       ;;

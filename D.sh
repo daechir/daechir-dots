@@ -27,7 +27,7 @@ prepare_config(){
 
 install_config(){
   local wallfile="Nier-automata-minified.zip"
-  local walldir="Nier-automata-minified"
+  local walldir="${wallfile%.*}"
 
   # Setup files
   cp tilde/.bashrc ~
@@ -88,5 +88,5 @@ install_extra_config(){
 
 prepare_config
 install_config
-install_extra_config
+#install_extra_config
 

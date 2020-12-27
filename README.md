@@ -2,8 +2,8 @@
 Author: Daechir <br/>
 Author URL: https://github.com/daechir <br/>
 License: GNU GPL <br/>
-Modified Date: 12/01/20 <br/>
-Version: v1c
+Modified Date: 12/27/20 <br/>
+Version: v1d
 
 
 ## Changelog
@@ -20,11 +20,12 @@ If you decide to use my dot files please just credit me as the original author s
 
 ## Usage
 First add your wallpaper.zip to the wallpapers folder.<br/>
-Second update the variables in install_config to match your wallpaper.zip.<br/>
-Lastly just run the script:<br/><br/>
-`chmod +x D.sh`<br/>
-`./D.sh`
-<br/><br/> Or <br/><br/>
-`bash D.sh`
-<br/><br/> Note: gsettings may have to be reapplied after rebooting in some cases.
+Second update the wallfile variable in install_config to match your wallpaper.zip name.<br/>
+Third execute the script:<br/><br/>
+`bash D.sh`<br/><br/>
+Fourth reboot.<br/>
+Fifth comment out prepare_config and install_config.<br/>
+Sixth uncomment install_extra_config.<br/>
+Seventh re-execute the script to apply the proper gsettings.<br/>
+Eighth reboot again.
 
