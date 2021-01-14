@@ -9,7 +9,7 @@ xcd() {
 
   case $xenos_cdtype in
     1)
-      cd ".."
+      cd "../"
       ;;
     2)
       cd "../../"
@@ -118,25 +118,27 @@ xarce() {
 xfind() {
   local xenos_ftype=$1
   local xenos_arg1=$2
-  local xenos_arg2=$3
 
   case $xenos_ftype in
-    1)
-      find "${xenos_arg1}" -type f -iname "${xenos_arg2}" 2> /dev/null
-      ;;
-    1a)
-      find "${xenos_arg1}" -type d -iname "${xenos_arg2}" 2> /dev/null
-      ;;
-    2)
-      find "${xenos_arg1}" -exec shred -f -u {} \; 2> /dev/null
-      rm -rf "${xenos_arg1}"
-      ;;
-    3)
+    chmod)
       find "${xenos_arg1}" -type d -exec chmod 700 {} \; 2> /dev/null
       find "${xenos_arg1}" -type f -exec chmod 600 {} \; 2> /dev/null
       ;;
-    4)
-      find "${xenos_arg1}" -exec touch {} \;
+  esac
+}
+
+# Add xsearch function
+xsearch() {
+  local xenos_stype=$1
+  local xenos_arg1=$2
+  local xenos_arg2=$3
+
+  case $xenos_stype in
+    f | file)
+      find "${xenos_arg1}" -type f -iname "${xenos_arg2}" 2> /dev/null
+      ;;
+    d | dir | directory)
+      find "${xenos_arg1}" -type d -iname "${xenos_arg2}" 2> /dev/null
       ;;
   esac
 }
@@ -148,37 +150,31 @@ xfm() {
   local xenos_arg2=$3
 
   case $xenos_fmtype in
-    1)
+    crf | createfile)
       touch "${xenos_arg1}"
       ;;
-    1a)
+    crd | createdir)
       mkdir "${xenos_arg1}"
       ;;
-    2)
-      shred -f -u "${xenos_arg1}"
-      ;;
-    2a)
+    dels | deletesingle)
       rm -f "${xenos_arg1}"
       ;;
-    2b)
+    delr | deleterecur)
       rm -rf "${xenos_arg1}"
       ;;
-    3)
-      cp "${xenos_arg1}" "${xenos_arg2}"
+    sdels | securedeletesingle)
+      shred -f -u -z "${xenos_arg1}"
       ;;
-    3a)
-      cp -r "${xenos_arg1}" "${xenos_arg2}"
+    sdelr | securedeleterecur)
+      find "${xenos_arg1}" -exec shred -f -u -z {} \; 2> /dev/null && rm -rf "${xenos_arg1}"
       ;;
-    3b)
+    cp | copy)
       rsync --archive --verbose --human-readable --whole-file --compress-level=0 --progress "${xenos_arg1}" "${xenos_arg2}"
       ;;
-    3c)
-      rsync --archive --verbose --human-readable --whole-file --compress-level=0 --progress --dirs "${xenos_arg1}" "${xenos_arg2}"
-      ;;
-    4)
+    mv | move)
       mv "${xenos_arg1}" "${xenos_arg2}"
       ;;
-    4a)
+    rn | rename)
       rename "${xenos_arg1}" "${xenos_arg2}"
       ;;
   esac

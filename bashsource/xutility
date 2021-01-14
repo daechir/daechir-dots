@@ -8,42 +8,30 @@ xdl() {
   local xenos_arg2=$3
 
   case $xenos_dtype in
-    1)
-      if [[ -n "${xenos_arg2}" ]]; then
-        youtube-dl -f bestvideo+bestaudio --external-downloader axel --external-downloader-args --ipv4 "${xenos_arg1}" "${xenos_arg2}"
-      else
-        youtube-dl -f bestvideo+bestaudio --external-downloader axel --external-downloader-args --ipv4 "${xenos_arg1}"
-      fi
+    a | auto)
+      xenos_dtype="youtube-dl -f bestvideo+bestaudio --force-ipv4 --external-downloader axel --external-downloader-args --ipv4"
       ;;
-    2)
-      if [[ -n "${xenos_arg2}" ]]; then
-        youtube-dl -f bestvideo+bestaudio --merge-output-format mp4 --external-downloader axel --external-downloader-args --ipv4 "${xenos_arg1}" "${xenos_arg2}"
-      else
-        youtube-dl -f bestvideo+bestaudio --merge-output-format mp4 --external-downloader axel --external-downloader-args --ipv4 "${xenos_arg1}"
-      fi
+    4 | mp4)
+      xenos_dtype="youtube-dl -f bestvideo+bestaudio --merge-output-format mp4 --force-ipv4 --external-downloader axel --external-downloader-args --ipv4"
       ;;
-    3)
-      if [[ -n "${xenos_arg2}" ]]; then
-        youtube-dl -x --audio-format mp3 --audio-quality 320K --external-downloader axel --external-downloader-args --ipv4 "${xenos_arg1}" "${xenos_arg2}"
-      else
-        youtube-dl -x --audio-format mp3 --audio-quality 320K --external-downloader axel --external-downloader-args --ipv4 "${xenos_arg1}"
-      fi
+    3 | mp3)
+      xenos_dtype="youtube-dl -x --audio-format mp3 --audio-quality 320K --force-ipv4 --external-downloader axel --external-downloader-args --ipv4"
       ;;
-    3a)
-      if [[ -n "${xenos_arg2}" ]]; then
-        youtube-dl -x --audio-format mp3 --audio-quality 320K --yes-playlist --external-downloader axel --external-downloader-args --ipv4 "${xenos_arg1}" "${xenos_arg2}"
-      else
-        youtube-dl -x --audio-format mp3 --audio-quality 320K --yes-playlist --external-downloader axel --external-downloader-args --ipv4 "${xenos_arg1}"
-      fi
+    3p | mp3p)
+      xenos_dtype="youtube-dl -x --audio-format mp3 --audio-quality 320K --yes-playlist --force-ipv4 --external-downloader axel --external-downloader-args --ipv4"
       ;;
-    4)
-      if [[ -n "${xenos_arg2}" ]]; then
-        axel --ipv4 "${xenos_arg1}" "${xenos_arg2}"
-      else
-        axel --ipv4 "${xenos_arg1}"
-      fi
+    ax | axel)
+      xenos_dtype="axel --ipv4"
       ;;
   esac
+
+  if [[ -n "${xenos_arg2}" ]]; then
+    xenos_dtype="${xenos_dtype} ${xenos_arg1} ${xenos_arg2}"
+  else
+    xenos_dtype="${xenos_dtype} ${xenos_arg1}"
+  fi
+
+  $xenos_dtype
 }
 
 # Add xgpg function
@@ -52,13 +40,13 @@ xgpg() {
   local xenos_arg1=$2
 
   case $xenos_gtype in
-    1)
+    tf | twofish)
       gpg --symmetric --cipher-algo TWOFISH "${xenos_arg1}"
       ;;
-    2)
+    aes | aes256)
       gpg --symmetric --cipher-algo AES256 "${xenos_arg1}"
       ;;
-    3)
+    d | decrypt)
       gpg -d "${xenos_arg1}"
       ;;
   esac
@@ -71,16 +59,16 @@ xiso() {
   local xenos_arg2=$3
 
   case $xenos_itype in
-    1)
+    sha256)
       sha256sum "${xenos_arg1}"
       ;;
-    2)
+    sha1)
       sha1sum "${xenos_arg1}"
       ;;
-    3)
+    md5)
       md5sum "${xenos_arg1}"
       ;;
-    4)
+    dd)
       doas dd bs=4M if="${xenos_arg1}" of=/dev/"${xenos_arg2}" status=progress && sync
       ;;
   esac
@@ -88,8 +76,14 @@ xiso() {
 
 # Add xleave function
 xleave() {
-  bleachbit --preset --clean &> /dev/null
+  local xenos_user=$(whoami)
+  xenos_user="/home/${xenos_user}/"
+
+  doas find / -type f -iname "system.map*" -exec shred -f -u -z {} \; &> /dev/null
   doas journalctl --rotate --vacuum-time=1s &> /dev/null
+  bleachbit --preset --clean &> /dev/null
+  find "${xenos_user}" -type d -exec chmod 700 {} \; &> /dev/null
+  find "${xenos_user}" -type f -exec chmod 600 {} \; &> /dev/null
   sleep 5 && systemctl poweroff
 }
 
@@ -100,13 +94,13 @@ xpw() {
   local xenos_arg2=$3
 
   case $xenos_ptype in
-    1)
+    me | maxentropy)
       pwgen -cnys "${xenos_arg1}" "${xenos_arg2}"
       ;;
-    2)
+    na | noambiguous)
       pwgen -cnysB "${xenos_arg1}" "${xenos_arg2}"
       ;;
-    3)
+    lan | lettersandnumbers)
       pwgen -cns "${xenos_arg1}" "${xenos_arg2}"
       ;;
   esac
@@ -118,25 +112,25 @@ xsys() {
   local xenos_arg1=$2
 
   case $xenos_stype in
-    1)
+    err)
       journalctl -b -p err
       ;;
-    1a)
+    warn)
       journalctl -b -p warning
       ;;
-    1b)
+    status)
       systemctl status
       ;;
-    2)
+    reload)
       doas systemctl daemon-reload
       ;;
-    3)
+    restart)
       doas systemctl restart "${xenos_arg1}"
       ;;
-    4)
+    unit-files)
       systemctl list-unit-files | grep -i "${xenos_arg1}"
       ;;
-    5)
+    sysctl)
       sysctl -a | grep -i "${xenos_arg1}"
       ;;
   esac

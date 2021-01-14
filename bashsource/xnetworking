@@ -7,22 +7,24 @@ xconnect() {
   local xenos_arg1=$2
 
   case $xenos_ctype in
-    1)
+    wc | wificonnect)
       nmcli device wifi connect "${xenos_arg1}"
       ;;
-    1a)
+    ws | wifiscan)
       nmcli device wifi list
       ;;
-    2)
+    ov | openvpn)
       doas openvpn "${xenos_arg1}"
       ;;
-    2a)
+    xcd | xenos-control-dns)
       doas bash /usr/bin/xenos-control-dns.sh 2> /dev/null
       ;;
-    3)
+    d | disconnect)
       local active_device=$(ip -o link show | awk '{print $2,$9}' | grep -i "up" | awk '{print $1}' | sed "s/://g")
 
-      nmcli device disconnect "${active_device}"
+      if [[ -n "${active_device}" ]]; then
+        nmcli device disconnect "${active_device}"
+      fi
       ;;
   esac
 }
