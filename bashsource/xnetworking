@@ -27,7 +27,7 @@ xconnect() {
       local active_device_name=$(nmcli device | grep -i "connected" | grep -v -i "disconnected\|connected (externally)" | awk '{print $1}' | sed "s/^[ \t]*//;s/[ \t]*$//" | sed "/^$/d")
 
       if [[ -n "${active_device_name}" ]]; then
-        nmcli device disconnect "${active_device}"
+        nmcli device disconnect "${active_device_name}"
       fi
       ;;
   esac
