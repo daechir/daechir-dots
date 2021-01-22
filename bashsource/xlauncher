@@ -1,3 +1,25 @@
+##########################################
+#
+# ___  ____ ____ ____ _  _ _ ____ ____ .
+# |  \ |__| |___ |    |__| | |__/ [__  '
+# |__/ |  | |___ |___ |  | | |  \ ___]
+#
+#         ___  ____ ___ ____
+#         |  \ |  |  |  [__
+#         |__/ |__|  |  ___]
+#
+#
+# This file is a part of Daechir Dots.
+# It adheres to the GNU GPL license.
+#
+# https://github.com/daechir/daechir-dots
+#
+# © 2020-2021
+#
+#
+##########################################
+
+
 # .xlauncher
 # A minimalist program launcher using only bash functions
 

@@ -1,3 +1,25 @@
+##########################################
+#
+# ___  ____ ____ ____ _  _ _ ____ ____ .
+# |  \ |__| |___ |    |__| | |__/ [__  '
+# |__/ |  | |___ |___ |  | | |  \ ___]
+#
+#         ___  ____ ___ ____
+#         |  \ |  |  |  [__
+#         |__/ |__|  |  ___]
+#
+#
+# This file is a part of Daechir Dots.
+# It adheres to the GNU GPL license.
+#
+# https://github.com/daechir/daechir-dots
+#
+# © 2020-2021
+#
+#
+##########################################
+
+
 gtk-theme-name = "Arc"
 gtk-icon-theme-name = "Papirus-Light"
 gtk-font-name = "Roboto 11"
@@ -7,3 +29,4 @@ gtk-toolbar-style = GTK_TOOLBAR_BOTH_HORIZ
 gtk-cursor-theme-name = Vanilla-DMZ
 gtk-recent-files-limit = 0
 gtk-recent-files-max-age = 0
+

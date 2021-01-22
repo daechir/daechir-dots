@@ -1,3 +1,25 @@
+##########################################
+#
+# ___  ____ ____ ____ _  _ _ ____ ____ .
+# |  \ |__| |___ |    |__| | |__/ [__  '
+# |__/ |  | |___ |___ |  | | |  \ ___]
+#
+#         ___  ____ ___ ____
+#         |  \ |  |  |  [__
+#         |__/ |__|  |  ___]
+#
+#
+# This file is a part of Daechir Dots.
+# It adheres to the GNU GPL license.
+#
+# https://github.com/daechir/daechir-dots
+#
+# © 2020-2021
+#
+#
+##########################################
+
+
 # .xnetworking
 # Manage various networking items using only bash functions
 
@@ -35,7 +57,8 @@ xconnect() {
 
 # Add xcons (x connection state) function
 xcons() {
-  local xenos_arg1=$1
+  local xenos_ctype=$(nmcli device | grep -i "connected" | grep -v -i "disconnected\|connected (externally)")
+  local xenos_cname=$(echo "${xenos_ctype}" | awk '{$1=$2=$3=""; print $0}' | sed "s/^[ \t]*//;s/[ \t]*$//" | sed "/^$/d")
 
   echo -e "\n# ip link show\n"
   ip link show
@@ -44,9 +67,9 @@ xcons() {
   echo -e "\n# resolvectl status\n"
   resolvectl status
 
-  if [[ -n "${xenos_arg1}" ]]; then
-    echo -e "\n# nmcli connection show \"${xenos_arg1}\"\n"
-    nmcli connection show "${xenos_arg1}" | grep -i "mdns\|llmnr\|powersave"
+  if [[ -n "${xenos_cname}" ]]; then
+    echo -e "\n# nmcli connection show \"${xenos_cname}\"\n"
+    nmcli connection show "${xenos_cname}" | grep -i "mdns\|llmnr\|powersave"
   fi
 }
 

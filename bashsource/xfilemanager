@@ -1,3 +1,25 @@
+##########################################
+#
+# ___  ____ ____ ____ _  _ _ ____ ____ .
+# |  \ |__| |___ |    |__| | |__/ [__  '
+# |__/ |  | |___ |___ |  | | |  \ ___]
+#
+#         ___  ____ ___ ____
+#         |  \ |  |  |  [__
+#         |__/ |__|  |  ___]
+#
+#
+# This file is a part of Daechir Dots.
+# It adheres to the GNU GPL license.
+#
+# https://github.com/daechir/daechir-dots
+#
+# © 2020-2021
+#
+#
+##########################################
+
+
 # .xfilemanager
 # A minimalist file manager using only bash functions
 # In a sense, making file managers just file managers again
@@ -143,7 +165,8 @@ xsearch() {
   esac
 }
 
-# Add xfm (x filemanager) function
+# Add xfm (x filemanager) function's
+# Non-elevated
 xfm() {
   local xenos_fmtype=$1
   local xenos_arg1=$2
@@ -176,6 +199,43 @@ xfm() {
       ;;
     rn | rename)
       rename "${xenos_arg1}" "${xenos_arg2}"
+      ;;
+  esac
+}
+
+# Elevated
+xfme() {
+  local xenos_fmtype=$1
+  local xenos_arg1=$2
+  local xenos_arg2=$3
+
+  case $xenos_fmtype in
+    crf | createfile)
+      doas touch "${xenos_arg1}"
+      ;;
+    crd | createdir)
+      doas mkdir "${xenos_arg1}"
+      ;;
+    dels | deletesingle)
+      doas rm -f "${xenos_arg1}"
+      ;;
+    delr | deleterecur)
+      doas rm -rf "${xenos_arg1}"
+      ;;
+    sdels | securedeletesingle)
+      doas shred -f -u -z "${xenos_arg1}"
+      ;;
+    sdelr | securedeleterecur)
+      doas find "${xenos_arg1}" -exec shred -f -u -z {} \; 2> /dev/null && rm -rf "${xenos_arg1}"
+      ;;
+    cp | copy)
+      doas rsync --archive --verbose --human-readable --whole-file --compress-level=0 --progress "${xenos_arg1}" "${xenos_arg2}"
+      ;;
+    mv | move)
+      doas mv "${xenos_arg1}" "${xenos_arg2}"
+      ;;
+    rn | rename)
+      doas rename "${xenos_arg1}" "${xenos_arg2}"
       ;;
   esac
 }
