@@ -33,9 +33,7 @@ fi
 
 ### Begin setup
 ## Non-background tasks
-#/usr/bin/xinput disable "ELAN0708:00 04F3:30A0 Touchpad"
-#/usr/bin/xinput disable "SynPS/2 Synaptics TouchPad"
-/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets
+#xinput
 /usr/bin/redshift -P -O 3000
 /usr/bin/xbindkeys
 /usr/bin/xsetroot -cursor_name left_ptr

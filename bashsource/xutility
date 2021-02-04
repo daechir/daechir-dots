@@ -101,7 +101,6 @@ xleave() {
   local xenos_user=$(whoami)
   xenos_user="/home/${xenos_user}/"
 
-  doas find / -type f -iname "system.map*" -exec shred -f -u -z {} \; &> /dev/null
   doas journalctl --rotate --vacuum-time=1s &> /dev/null
   bleachbit --preset --clean &> /dev/null
   find "${xenos_user}" -type d -exec chmod 700 {} \; &> /dev/null

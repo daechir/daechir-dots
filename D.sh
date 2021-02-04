@@ -30,6 +30,21 @@ set -xe
 prepare_config(){
   local bleachbit_hash=$(cat /dev/urandom | tr -dc "a-zA-Z0-9" | fold -w 128 | head -n 1)
   local username=$(whoami)
+  local is_intel_cpu=$(lscpu | grep -i "intel(r)" 2> /dev/null || echo "")
+
+  # Configure config files
+  sed -i "s/^hashsalt =/hashsalt = ${bleachbit_hash}/g" config/bleachbit/bleachbit.ini
+  sed -i "s/USERNAME/${username}/g" config/bleachbit/bleachbit.ini
+  sed -i "s/USERNAME/${username}/g" config/deluge/core.conf
+
+  # Configure xinitrc
+  if [[ -n "${is_intel_cpu}" ]]; then
+    local xinput="/usr/bin/xinput disable \"SynPS/2 Synaptics TouchPad\""
+  else
+    local xinput="/usr/bin/xinput disable \"ELAN0708:00 04F3:30A0 Touchpad\""
+  fi
+
+  sed -i "s/^#xinput/${xinput}/g" tilde/xinitrc
 
   # Make files hidden
   for file in tilde/*
@@ -41,17 +56,16 @@ prepare_config(){
   do
     mv "${file}" "bashsource/.${file##*/}"
   done
-
-  # Configure config variables
-  sed -i "s/^hashsalt =/hashsalt = ${bleachbit_hash}/g" config/bleachbit/bleachbit.ini
-  sed -i "s/USERNAME/${username}/g" config/bleachbit/bleachbit.ini
-  sed -i "s/USERNAME/${username}/g" config/deluge/core.conf
 }
 
 
 install_config(){
   local wallfile="Nier-automata-minified.zip"
   local walldir="${wallfile%.*}"
+  local userjsfile="user.js"
+  local mozpath="$HOME/.mozilla/firefox"
+  local mozfolder=$(ls "${mozpath}" | grep -i "default-release")
+  mozpath="${mozpath}/${mozfolder}"
 
   # Setup files
   cp tilde/.bashrc ~
@@ -92,7 +106,7 @@ install_config(){
   # Start firefox for profile generation then kill it
   firefox
   # Add firefox user.js to the new profile
-  cp firefox/userjs/user.js ~/.mozilla/firefox/"$(ls ~/.mozilla/firefox | grep default-release)"
+  cp "firefox/userjs/${userjsfile}" "${mozpath}"
 }
 
 
