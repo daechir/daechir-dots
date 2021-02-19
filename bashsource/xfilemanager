@@ -42,7 +42,10 @@ xcd() {
     4)
       cd "../../../../"
       ;;
-    c | current)
+    b | backward)
+      cd "$OLDPWD"
+      ;;
+    f | forward)
       cd "$PWD/${xenos_arg1}"
       ;;
     h | home)

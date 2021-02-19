@@ -44,7 +44,7 @@ prepare_config(){
     local xinput="/usr/bin/xinput disable \"ELAN0708:00 04F3:30A0 Touchpad\""
   fi
 
-  sed -i "s/^#xinput/${xinput}/g" tilde/xinitrc
+  sed -i "s|^#xinput|${xinput}|g" tilde/xinitrc
 
   # Make files hidden
   for file in tilde/*
@@ -62,10 +62,6 @@ prepare_config(){
 install_config(){
   local wallfile="Nier-automata-minified.zip"
   local walldir="${wallfile%.*}"
-  local userjsfile="user.js"
-  local mozpath="$HOME/.mozilla/firefox"
-  local mozfolder=$(ls "${mozpath}" | grep -i "default-release")
-  mozpath="${mozpath}/${mozfolder}"
 
   # Setup files
   cp tilde/.bashrc ~
@@ -102,11 +98,6 @@ install_config(){
   rm -f ~/.local/share/recently-used.xbel
   touch ~/.local/share/recently-used.xbel
   doas chattr +i ~/.local/share/recently-used.xbel
-
-  # Start firefox for profile generation then kill it
-  firefox
-  # Add firefox user.js to the new profile
-  cp "firefox/userjs/${userjsfile}" "${mozpath}"
 }
 
 

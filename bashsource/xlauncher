@@ -30,7 +30,7 @@ xlaunch() {
 
   case $xenos_app in
     1)
-      xenos_app="firefox --no-remote"
+      xenos_app="brave"
       ;;
     2)
       xenos_app="howl"
