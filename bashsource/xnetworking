@@ -73,22 +73,6 @@ xcons() {
   fi
 }
 
-# Add xmirup (x mirror update) function
-xmirup() {
-  if [[ -n $1 ]]; then
-    local xenos_countrycode=$1
-  else
-    local xenos_countrycode="US"
-  fi
-
-  local xenos_mirurl="https://archlinux.org/mirrorlist/?country=${xenos_countrycode}&protocol=https&ip_version=4&use_mirror_status=on"
-
-  curl -o mirrorlist.pre "${xenos_mirurl}"
-  sed -i "s/^#Server/Server/g" mirrorlist.pre
-  rankmirrors -n 8 mirrorlist.pre > mirrorlist
-  doas cp mirrorlist /etc/pacman.d/
-}
-
 # Add xovpnup (x ovpn update) function
 xovpnup() {
   local xenos_provider=$1

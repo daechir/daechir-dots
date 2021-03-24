@@ -45,9 +45,6 @@ xcd() {
     b | backward)
       cd "$OLDPWD"
       ;;
-    f | forward)
-      cd "$PWD/${xenos_arg1}"
-      ;;
     h | home)
       cd "$HOME/${xenos_arg1}"
       ;;
@@ -149,6 +146,9 @@ xfind() {
       find "${xenos_arg1}" -type d -exec chmod 700 {} \; 2> /dev/null
       find "${xenos_arg1}" -type f -exec chmod 600 {} \; 2> /dev/null
       ;;
+    dos2unix)
+      find "${xenos_arg1}" -type f -exec xun {} \; 2> /dev/null
+      ;;
   esac
 }
 
@@ -159,11 +159,11 @@ xsearch() {
   local xenos_arg2=$3
 
   case $xenos_stype in
-    f | file)
-      find "${xenos_arg1}" -type f -iname "${xenos_arg2}" 2> /dev/null
-      ;;
     d | dir | directory)
       find "${xenos_arg1}" -type d -iname "${xenos_arg2}" 2> /dev/null
+      ;;
+    f | file)
+      find "${xenos_arg1}" -type f -iname "${xenos_arg2}" 2> /dev/null
       ;;
   esac
 }

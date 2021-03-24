@@ -33,7 +33,3 @@ alias cgrep='cgrep --color=auto -C 1'
 alias ls='ls --color=auto'
 alias ll='ls -la'
 
-# Add pacman alias's
-alias pacsyu='doas pacman -Syu'
-alias pacclean='doas pacman -Rns $(pacman -Qtdq)'
-

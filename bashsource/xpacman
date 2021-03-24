@@ -1,0 +1,127 @@
+##########################################
+#
+# ___  ____ ____ ____ _  _ _ ____ ____ .
+# |  \ |__| |___ |    |__| | |__/ [__  '
+# |__/ |  | |___ |___ |  | | |  \ ___]
+#
+#         ___  ____ ___ ____
+#         |  \ |  |  |  [__
+#         |__/ |__|  |  ___]
+#
+#
+# This file is a part of Daechir Dots.
+# It adheres to the GNU GPL license.
+#
+# https://github.com/daechir/daechir-dots
+#
+# © 2020-2021
+#
+#
+##########################################
+
+
+# .xpacman
+# Manage various pacman items using only bash functions
+
+# Add xpacup (x pacman update) function
+xpacup() {
+  doas pacman -Syu --noconfirm
+
+  local xenos_aurfolder="$HOME/.aur"
+
+  if [[ ! -d "${xenos_aurfolder}" ]]; then
+    mkdir "${xenos_aurfolder}"
+  fi
+
+  local xenos_aurlogfolder="${xenos_aurfolder}/.aurlogs"
+
+  if [[ ! -d "${xenos_aurlogfolder}" ]]; then
+    mkdir "${xenos_aurlogfolder}"
+  fi
+
+  local xenos_date=$(date +"%m-%d-%y")
+  local xenos_aurlogfile="${xenos_aurlogfolder}/${xenos_date}.log"
+
+  if [[ -f "${xenos_aurlogfile}" ]]; then
+    rm -f "${xenos_aurlogfile}"
+  fi
+
+  touch "${xenos_aurlogfile}"
+
+  local xenos_aurpkgfolder="${xenos_aurfolder}/.aurpackages"
+
+  if [[ ! -d "${xenos_aurpkgfolder}" ]]; then
+    mkdir "${xenos_aurpkgfolder}"
+  fi
+
+  cd "${xenos_aurpkgfolder}"
+
+  local xenos_aurpkglist=(
+    "2bwm-git"
+    "brave-bin"
+    "openvpn-update-systemd-resolved"
+    "redshift-minimal"
+  )
+
+  for aurpkgname in "${xenos_aurpkglist[@]}"
+  do
+    local xenos_auru="https://aur.archlinux.org/${aurpkgname}.git"
+    git clone "${xenos_auru}"
+    cd "${aurpkgname}"
+
+    local xenos_pacv=$(pacman -Qem "${aurpkgname}" | sed "s/${aurpkgname} //g")
+
+    if [[ "${aurpkgname}" == "brave-bin" ]]; then
+      xenos_pacv=$(echo "${xenos_pacv}" | sed "s/1://g")
+    fi
+
+    local xenos_aurv=$(grep -i "pkgver=" PKGBUILD | sed "s/pkgver=//g")
+    local xenos_aurr=$(grep -i "pkgrel=" PKGBUILD | sed "s/pkgrel=//g")
+    xenos_aurv="${xenos_aurv}-${xenos_aurr}"
+
+    if [[ "${xenos_pacv}" != "${xenos_aurv}" ]]; then
+      echo -e "${aurpkgname} is out of date.\nThe current version is: ${xenos_pacv}\nThe aur version is: ${xenos_aurv}\n" | tee -a "${xenos_aurlogfile}" > /dev/null
+
+      if [[ "${aurpkgname}" == "brave-bin" ]]; then
+        echo -e "${aurpkgname} is automatically upgrading to ${xenos_aurv}.\n" | tee -a "${xenos_aurlogfile}" > /dev/null
+
+        makepkg -c
+        doas pacman -U $aurpkgname*xz --noconfirm
+      fi
+    fi
+
+    cd ..
+  done
+
+  rm -rf "${xenos_aurpkgfolder}"
+
+  cd "${xenos_aurlogfolder}"
+
+  doas pacman -Rns $(pacman -Qtdq) --noconfirm
+}
+
+# Add xpacmirup (x pacman mirror update) function
+xpacmirup() {
+  if [[ -n $1 ]]; then
+    local xenos_countrycode=$1
+  else
+    local xenos_countrycode="US"
+  fi
+
+  local xenos_mirurl="https://archlinux.org/mirrorlist/?country=${xenos_countrycode}&protocol=https&ip_version=4&use_mirror_status=on"
+
+  local xenos_mirfolder="$HOME/.pacmirs"
+
+  if [[ ! -d "${xenos_mirfolder}" ]]; then
+    mkdir "${xenos_mirfolder}"
+  fi
+
+  cd "${xenos_mirfolder}"
+  curl -o mirrorlist.pre "${xenos_mirurl}"
+  sed -i "s/^#Server/Server/g" mirrorlist.pre
+  rankmirrors -n 8 mirrorlist.pre > mirrorlist
+  sed -i "2,40d" mirrorlist
+  doas cp mirrorlist /etc/pacman.d/
+  rm -rf "${xenos_mirfolder}"
+}
+

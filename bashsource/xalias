@@ -28,4 +28,5 @@ alias xe='rnano'
 alias xep='doas rnano'
 alias xti='date +"%I:%M%P %x"'
 alias xtr='tree -a -l -f -Q -p -u -h -D --dirsfirst -t -r -C -L 2'
+alias xun='sed -i "s/\r//g"'
 

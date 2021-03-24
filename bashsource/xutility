@@ -151,24 +151,22 @@ xsys() {
     sysctl)
       sysctl -a | grep -i "${xenos_arg1}"
       ;;
+    verify)
+      local xenos_vtype=(
+        "/etc/modprobe.d/"
+        "/etc/modules-load.d/"
+        "/etc/sysctl.d/"
+        "/usr/lib/modprobe.d/"
+        "/usr/lib/modules-load.d/"
+        "/usr/lib/sysctl.d/"
+      )
+
+      for vitem in "${xenos_vtype[@]}"
+      do
+        echo -e "\n${vitem}\n"
+        ll "${vitem}"
+      done
+      ;;
   esac
-}
-
-# Add xverify function
-xverify() {
-  local xenos_vtype=(
-    "/etc/modprobe.d/"
-    "/etc/modules-load.d/"
-    "/etc/sysctl.d/"
-    "/usr/lib/modprobe.d/"
-    "/usr/lib/modules-load.d/"
-    "/usr/lib/sysctl.d/"
-  )
-
-  for vitem in "${xenos_vtype[@]}"
-  do
-    echo -e "\n${vitem}\n"
-    ll "${vitem}"
-  done
 }
 
