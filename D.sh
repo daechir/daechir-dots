@@ -103,13 +103,31 @@ install_config(){
 
 install_extra_config(){
   # Setup other gtk settings (dconf)
-  gsettings set org.gnome.desktop.wm.preferences theme "Arc"
-  gsettings set org.gnome.desktop.wm.preferences titlebar-font "Roboto 11"
-  gsettings set org.gnome.desktop.media-handling automount-open false
+  gsettings set org.freedesktop.ColorHelper profile-upload-uri ""
+  gsettings set org.gnome.desktop.default-applications.office.calendar exec ""
+  gsettings set org.gnome.desktop.default-applications.office.tasks exec ""
+  gsettings set org.gnome.desktop.default-applications.terminal exec ""
+  gsettings set org.gnome.desktop.default-applications.terminal exec-arg ""
+  gsettings set org.gnome.desktop.interface cursor-size 16
+  gsettings set org.gnome.desktop.interface cursor-theme "Vanilla-DMZ"
+  gsettings set org.gnome.desktop.interface document-font-name 'Roboto 11'
+  gsettings set org.gnome.desktop.interface font-hinting 'full'
+  gsettings set org.gnome.desktop.interface font-name 'Roboto 11'
+  gsettings set org.gnome.desktop.interface gtk-theme "Arc"
+  gsettings set org.gnome.desktop.interface icon-theme "Papirus-Light"
+  gsettings set org.gnome.desktop.interface monospace-font-name "Source Code Variable Medium 11"
   gsettings set org.gnome.desktop.media-handling automount false
+  gsettings set org.gnome.desktop.media-handling automount-open false
+  gsettings set org.gnome.desktop.media-handling autorun-never true
+  gsettings set org.gnome.desktop.media-handling autorun-x-content-start-app [""]
   gsettings set org.gnome.desktop.privacy recent-files-max-age 0
   gsettings set org.gnome.desktop.privacy remember-app-usage false
   gsettings set org.gnome.desktop.privacy remember-recent-files false
+  gsettings set org.gnome.desktop.search-providers disable-external true
+  gsettings set org.gnome.desktop.search-providers sort-order [""]
+  gsettings set org.gnome.desktop.thumbnailers disable-all true
+  gsettings set org.gnome.desktop.wm.preferences theme "Arc"
+  gsettings set org.gnome.desktop.wm.preferences titlebar-font "Roboto 11"
   gsettings set org.gnome.system.location enabled false
   gsettings set org.gnome.system.location max-accuracy-level country
 }
