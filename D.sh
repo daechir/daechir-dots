@@ -125,6 +125,8 @@ install_extra_config(){
   gsettings set org.gnome.desktop.privacy remember-recent-files false
   gsettings set org.gnome.desktop.search-providers disable-external true
   gsettings set org.gnome.desktop.search-providers sort-order [""]
+  gsettings set org.gnome.desktop.thumbnail-cache maximum-age 0
+  gsettings set org.gnome.desktop.thumbnail-cache maximum-size 0
   gsettings set org.gnome.desktop.thumbnailers disable-all true
   gsettings set org.gnome.desktop.wm.preferences theme "Arc"
   gsettings set org.gnome.desktop.wm.preferences titlebar-font "Roboto 11"

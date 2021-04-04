@@ -34,6 +34,8 @@ fi
 ### Begin setup
 ## Non-background tasks
 #xinput
+# Note: Removing the below call to gnome-keyring-daemon can result in GNUPG writing to insecure memory.
+eval $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets)
 /usr/bin/redshift -P -O 3000
 /usr/bin/xbindkeys
 /usr/bin/xsetroot -cursor_name left_ptr
