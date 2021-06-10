@@ -25,7 +25,7 @@
 
 # Add xpacup (x pacman update) function
 xpacup() {
-  doas pacman -Syu --noconfirm
+  xel pacman -Syu --noconfirm
 
   local xenos_aurfolder="$HOME/.aur"
 
@@ -86,7 +86,7 @@ xpacup() {
         echo -e "${aurpkgname} is automatically upgrading to ${xenos_aurv}.\n" | tee -a "${xenos_aurlogfile}" > /dev/null
 
         makepkg -c
-        doas pacman -U $aurpkgname*xz --noconfirm
+        xel pacman -U $aurpkgname*xz --noconfirm
       fi
     fi
 
@@ -97,7 +97,7 @@ xpacup() {
 
   cd "${xenos_aurlogfolder}"
 
-  doas pacman -Rns $(pacman -Qtdq) --noconfirm
+  xel pacman -Rns $(pacman -Qtdq) --noconfirm
 }
 
 # Add xpacmirup (x pacman mirror update) function
@@ -121,7 +121,8 @@ xpacmirup() {
   sed -i "s/^#Server/Server/g" mirrorlist.pre
   rankmirrors -n 8 mirrorlist.pre > mirrorlist
   sed -i "2,40d" mirrorlist
-  doas cp mirrorlist /etc/pacman.d/
+  xel cp mirrorlist /etc/pacman.d/
+  cd ..
   rm -rf "${xenos_mirfolder}"
 }
 

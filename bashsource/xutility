@@ -91,14 +91,14 @@ xiso() {
       md5sum "${xenos_arg1}"
       ;;
     dd)
-      doas dd bs=4M if="${xenos_arg1}" of=/dev/"${xenos_arg2}" status=progress && sync
+      xel dd bs=4M if="${xenos_arg1}" of=/dev/"${xenos_arg2}"
       ;;
   esac
 }
 
 # Add xleave function
 xleave() {
-  doas journalctl --rotate --vacuum-time=1s &> /dev/null
+  xel journalctl --rotate --vacuum-time=1s &> /dev/null
   bleachbit --preset --clean &> /dev/null
   find "$HOME" -type d -exec chmod 700 {} \; &> /dev/null
   find "$HOME" -type f -exec chmod 600 {} \; &> /dev/null
@@ -140,10 +140,10 @@ xsys() {
       systemctl status
       ;;
     reload)
-      doas systemctl daemon-reload
+      xel systemctl daemon-reload
       ;;
     restart)
-      doas systemctl restart "${xenos_arg1}"
+      xel systemctl restart "${xenos_arg1}"
       ;;
     unit-files)
       systemctl list-unit-files | grep -i "${xenos_arg1}"

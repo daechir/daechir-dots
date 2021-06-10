@@ -56,7 +56,7 @@ xcd() {
       ;;
   esac
 
-  xtr
+  tree -a -l -f -Q -p -u -h -D --dirsfirst -t -r -C -L 2
 }
 
 # Add xarcc (x archive compress) function
@@ -136,22 +136,6 @@ xarce() {
   fi
 }
 
-# Add xfind function
-xfind() {
-  local xenos_ftype=$1
-  local xenos_arg1=$2
-
-  case $xenos_ftype in
-    chmod)
-      find "${xenos_arg1}" -type d -exec chmod 700 {} \; 2> /dev/null
-      find "${xenos_arg1}" -type f -exec chmod 600 {} \; 2> /dev/null
-      ;;
-    dos2unix)
-      find "${xenos_arg1}" -type f -exec xun {} \; 2> /dev/null
-      ;;
-  esac
-}
-
 # Add xsearch function
 xsearch() {
   local xenos_stype=$1
@@ -179,6 +163,18 @@ xfm() {
     crf | createfile)
       touch "${xenos_arg1}"
       ;;
+    cof | convertfile | dos2unix)
+      sed -i "s/\r//g" "${xenos_arg1}"
+      ;;
+    cofs | convertfiles | dos2unixrecursive)
+      find "${xenos_arg1}" -type f -exec sed -i "s/\r//g" {} \; 2> /dev/null
+      ;;
+    ef | editfile)
+      rnano "${xenos_arg1}"
+      ;;
+    vf | viewfile)
+      less "${xenos_arg1}"
+      ;;
     crd | createdir)
       mkdir "${xenos_arg1}"
       ;;
@@ -192,7 +188,7 @@ xfm() {
       shred -f -u -z "${xenos_arg1}"
       ;;
     sdelr | securedeleterecur)
-      find "${xenos_arg1}" -exec shred -f -u -z {} \; 2> /dev/null && rm -rf "${xenos_arg1}"
+      find "${xenos_arg1}" -type f -exec shred -f -u -z {} \; 2> /dev/null && rm -rf "${xenos_arg1}"
       ;;
     cp | copy)
       rsync --archive --verbose --human-readable --whole-file --compress-level=0 --progress "${xenos_arg1}" "${xenos_arg2}"
@@ -214,31 +210,43 @@ xfme() {
 
   case $xenos_fmtype in
     crf | createfile)
-      doas touch "${xenos_arg1}"
+      xel touch "${xenos_arg1}"
+      ;;
+    cof | convertfile | dos2unix)
+      xel sed -i "s/\r//g" "${xenos_arg1}"
+      ;;
+    cofs | convertfiles | dos2unixrecursive)
+      xel find "${xenos_arg1}" -type f -exec sed -i "s/\r//g" {} \; 2> /dev/null
+      ;;
+    ef | editfile)
+      xel rnano "${xenos_arg1}"
+      ;;
+    vf | viewfile)
+      xel less "${xenos_arg1}"
       ;;
     crd | createdir)
-      doas mkdir "${xenos_arg1}"
+      xel mkdir "${xenos_arg1}"
       ;;
     dels | deletesingle)
-      doas rm -f "${xenos_arg1}"
+      xel rm -f "${xenos_arg1}"
       ;;
     delr | deleterecur)
-      doas rm -rf "${xenos_arg1}"
+      xel rm -rf "${xenos_arg1}"
       ;;
     sdels | securedeletesingle)
-      doas shred -f -u -z "${xenos_arg1}"
+      xel shred -f -u -z "${xenos_arg1}"
       ;;
     sdelr | securedeleterecur)
-      doas find "${xenos_arg1}" -exec shred -f -u -z {} \; 2> /dev/null && rm -rf "${xenos_arg1}"
+      xel find "${xenos_arg1}" -type f -exec shred -f -u -z {} \; 2> /dev/null && rm -rf "${xenos_arg1}"
       ;;
     cp | copy)
-      doas rsync --archive --verbose --human-readable --whole-file --compress-level=0 --progress "${xenos_arg1}" "${xenos_arg2}"
+      xel rsync --archive --verbose --human-readable --whole-file --compress-level=0 --progress "${xenos_arg1}" "${xenos_arg2}"
       ;;
     mv | move)
-      doas mv "${xenos_arg1}" "${xenos_arg2}"
+      xel mv "${xenos_arg1}" "${xenos_arg2}"
       ;;
     rn | rename)
-      doas rename "${xenos_arg1}" "${xenos_arg2}"
+      xel rename "${xenos_arg1}" "${xenos_arg2}"
       ;;
   esac
 }
