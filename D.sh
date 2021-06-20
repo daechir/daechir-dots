@@ -58,7 +58,6 @@ prepare_config(){
   done
 }
 
-
 install_config(){
   local wallfile="Nier-automata-minified.zip"
   local walldir="${wallfile%.*}"
@@ -100,10 +99,15 @@ install_config(){
   doas chattr +i ~/.local/share/recently-used.xbel
 }
 
-
 install_extra_config(){
+  # Colord detection clause
+  local colord_installed=$(pacman -Qs colord | grep -i -v "lib")
+
   # Setup other gtk settings (dconf)
-  gsettings set org.freedesktop.ColorHelper profile-upload-uri ""
+  if [[ -n "${colord_installed}" ]]; then
+    gsettings set org.freedesktop.ColorHelper profile-upload-uri ""
+  fi
+
   gsettings set org.gnome.desktop.default-applications.office.calendar exec ""
   gsettings set org.gnome.desktop.default-applications.office.tasks exec ""
   gsettings set org.gnome.desktop.default-applications.terminal exec ""

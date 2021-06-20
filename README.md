@@ -2,8 +2,8 @@
 Author: Daechir <br/>
 Author URL: https://github.com/daechir <br/>
 License: GNU GPL <br/>
-Modified Date: 06/09/21 <br/>
-Version: v1k
+Modified Date: 06/20/21 <br/>
+Version: v1k1
 
 
 ## Changelog
