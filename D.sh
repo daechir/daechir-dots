@@ -101,7 +101,7 @@ install_config(){
 
 install_extra_config(){
   # Colord detection clause
-  local colord_installed=$(pacman -Qs colord | grep -i -v "lib")
+  local colord_installed=$(pacman -Qs colord | grep -i -v "lib" || echo "")
 
   # Setup other gtk settings (dconf)
   if [[ -n "${colord_installed}" ]]; then

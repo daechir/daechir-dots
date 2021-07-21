@@ -91,7 +91,7 @@ xiso() {
       md5sum "${xenos_arg1}"
       ;;
     dd)
-      xel dd bs=4M if="${xenos_arg1}" of=/dev/"${xenos_arg2}"
+      xel dd bs=4M if="${xenos_arg1}" of=/dev/"${xenos_arg2}" conv=fsync oflag=direct status=progress
       ;;
   esac
 }
